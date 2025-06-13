@@ -1,12 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import time
 from numpy.linalg import norm
-
-from astropy import units as u
-from poliastro.bodies import Earth
-from poliastro.twobody import Orbit
-from poliastro.plotting.static import StaticOrbitPlotter
 
 # --- Stumpff Functions ---
 def stumpff_C(z):
@@ -116,6 +109,7 @@ def propagate(r0_vec, v0_vec, mu, dt, tol=1e-8):
     
     return r_vec, v_vec
 
+# --- Mean and True anomalies ---
 def find_mean_true(e_list,r_p,mu,dt,time):
     for e0 in e_list:
         if e0 < 1: # Elliptical Orbit
@@ -230,6 +224,7 @@ def find_mean_true(e_list,r_p,mu,dt,time):
 
     return mean_anomalies, true_anomalies
 
+# --- Find Orbit of Specified eccentricity ---
 def find_orbit(r_p, e0, mu, total_time, dt):
     if np.isclose(e0, 1):  # Parabolic orbit
         v_p = np.sqrt(2 * mu/r_p)
@@ -268,151 +263,3 @@ def find_orbit(r_p, e0, mu, total_time, dt):
             v_arr[i] = np.array([np.nan, np.nan, np.nan])
 
     return r_arr, v_arr, time
-
-def main(d):
-    start_time = time.time()
-
-    # ---- parameters ----
-    dt = 0.1              # time step [s]
-    r_p = 10000           # periapsis radius [km]
-    mu = 398600.4418      # Earth's mu [km^3/s^2]
-    time_total = 6000     # propagation time [s]
-    e_list = [1e-8, 0.5, 0.9, 1.0, 1.2, 1.5, 2.0, 5.0, 12.0]
-
-    # Pre‑define the fixed angles
-    inc  = 0.0 * u.deg
-    raan = 0.0 * u.deg
-    argp = 0.0 * u.deg
-    nu   = 0.0 * u.deg
-
-    if d == 1:
-        # --- 1) Plot your custom orbits ---
-        plt.figure(figsize=(6,6))
-        for e0 in e_list:
-            try:
-                r_arr, v_arr, t_arr = find_orbit(r_p, e0, mu, time_total, dt)
-                plt.plot(r_arr[:,0], r_arr[:,1], label=f"e={e0:.2f}")
-            except Exception as ex:
-                print(f"[Custom] e={e0}: {ex}")
-        plt.plot(0,0,'yo', label="Earth")
-        plt.axis("equal"); plt.grid(True)
-        plt.title("Custom Propagator Orbits")
-        plt.xlabel("x [km]"); plt.ylabel("y [km]")
-        plt.legend()
-
-    if d == 2:
-        # --- 2) Plot Poliastro orbits on the same axes ---
-        fig, ax = plt.subplots(figsize=(6,6))
-        plotter = StaticOrbitPlotter(ax)
-        for e0 in e_list:
-            label = f"e={e0:.2f}"
-            if np.isclose(e0, 1.0):
-                # parabolic
-                p = 2 * r_p * u.km
-                orb = Orbit.parabolic(Earth, p, inc, raan, argp, nu)
-            else:
-                # elliptical or hyperbolic
-                a = (r_p / (1 - e0)) if e0 < 1 else (-r_p / (e0 - 1))
-                orb = Orbit.from_classical(
-                    Earth,
-                    a * u.km,
-                    e0 * u.one,
-                    inc, raan, argp, nu
-                )
-            plotter.plot(orb, label=label)
-        ax.set_title("Poliastro Orbits"); ax.grid(True)
-
-    if d == 3:
-        # --- 3) Compute error at final time and plot vs e ---
-        errors = []
-        for e0 in e_list:
-            try:
-                # custom final position
-                r_arr, _, _ = find_orbit(r_p, e0, mu, time_total, dt)
-                r_custom = r_arr[-1]
-
-                # poliastro at same final time
-                if np.isclose(e0, 1.0):
-                    orb = Orbit.parabolic(Earth, 2*r_p*u.km, inc, raan, argp, nu)
-                else:
-                    a = (r_p / (1 - e0)) if e0 < 1 else (-r_p / (e0 - 1))
-                    orb = Orbit.from_classical(
-                        Earth,
-                        a * u.km,
-                        e0 * u.one,
-                        inc, raan, argp, nu
-                    )
-                # sample at exactly time_total
-                sampled = orb.propagate(time_total * u.s)
-                r_poliastro = sampled.r.to_value(u.km)
-
-                errors.append(np.linalg.norm(r_custom - r_poliastro))
-            except Exception as ex:
-                print(f"[Error] e={e0}: {ex}")
-                errors.append(np.nan)
-
-        # plot error vs eccentricity
-        plt.figure(figsize=(6,4))
-        plt.semilogy(e_list, errors, 'o-')
-        plt.xlabel("Eccentricity")
-        plt.ylabel("Final Position Error [km]")
-        plt.title("Custom vs Poliastro Error")
-        plt.grid(True)
-
-        plt.show()
-        print(f"Elapsed time: {time.time() - start_time:.2f} s")
-
-    if d == 4:
-        # --- 4) Compute mean and true anomaly errors for one representative elliptical orbit ---
-        # Choose an example eccentricity
-        e0 = 0.5
-        r_arr, v_arr, t_arr = find_orbit(r_p, e0, mu, time_total, dt)
-
-        # Initialize Poliastro orbit at t=0
-        if np.isclose(e0, 1.0): # parabolic
-            p = 2 * r_p * u.km
-            orb = Orbit.parabolic(Earth, p, inc, raan, argp, nu)
-        else: # elliptical or hyperbolic
-            a = (r_p / (1 - e0)) if e0 < 1 else (-r_p / (e0 - 1))
-            orb = Orbit.from_classical(Earth,a * u.km,e0 * u.one,inc, raan, argp, nu)
-        
-        true_anomaly_errors = []
-        mean_anomaly_errors = []
-
-        for i, t in enumerate(t_arr):
-            r_vec = r_arr[i]
-            v_vec = v_arr[i]
-
-            # Skip if nan values (failed propagation)
-            if np.isnan(r_vec).any() or np.isnan(v_vec).any():
-                continue
-            
-            M_mine, nu_mine = find_mean_true(e_list,r_p,mu,dt,time_total)
-
-            # Poliastro propagated orbit
-            orb_t = orb.propagate(t * u.s)
-            nu_poliastro = orb_t.nu.to(u.deg).value
-            M_poliastro = orb_t.M.to(u.deg).value
-
-            # Calculate absolute difference in degrees (mod 360)
-            d_nu = abs((nu_mine - nu_poliastro + 180) % 360 - 180)
-            d_M = abs((M_mine - M_poliastro + 180) % 360 - 180)
-
-            true_anomaly_errors.append(d_nu)
-            mean_anomaly_errors.append(d_M)
-
-        plt.figure(figsize=(8,5))
-        plt.plot(t_arr[:len(true_anomaly_errors)], true_anomaly_errors, label="True Anomaly Error [deg]")
-        plt.plot(t_arr[:len(mean_anomaly_errors)], mean_anomaly_errors, label="Mean Anomaly Error [deg]")
-        plt.xlabel("Time [s]")
-        plt.ylabel("Absolute Error [deg]")
-        plt.title(f"Anomaly Errors for e = {e0}")
-        plt.legend()
-        plt.grid(True)
-        plt.show()
-
-        print(f"Elapsed time: {time.time() - start_time:.2f} s")
-
-
-if __name__ == "__main__":
-    main(4)
