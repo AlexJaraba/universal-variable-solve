@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
-from core import *
+from core import Chi_newton, stumpff_C, stumpff_S, f, g, df, dg
 
 def propagate(r0_vec, v0_vec, mu, dt, tol=1e-8):
     r0_vec = np.array(r0_vec)
