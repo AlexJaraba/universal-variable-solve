@@ -1,0 +1,10 @@
+[project]
+name = "univ_prop"
+version = "0.3.0"
+description = "Universal-variable orbit propagator (Python + C++)"
+authors = [{ name = "Alex Jaraba", email = "amj634@nau.edu" }]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24",
+]
