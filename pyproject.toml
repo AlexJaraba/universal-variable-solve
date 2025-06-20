@@ -5,6 +5,8 @@ description = "Universal-variable orbit propagator (Python + C++)"
 authors = [{ name = "Alex Jaraba", email = "amj634@nau.edu" }]
 readme = "README.md"
 requires-python = ">=3.9"
+where = ["."]
+include = ["api", "core", "util","examples","docs"]
 dependencies = [
     "numpy>=1.24",
 ]
