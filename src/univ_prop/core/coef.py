@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
-from stumpff import *
+from .stumpff import *
 
 def f(chi,r0,C):
     return 1 - (chi**2 / r0) * C
