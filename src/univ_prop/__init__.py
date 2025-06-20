@@ -13,3 +13,6 @@ __all__ = [
 
 # version from pyproject.toml (requires Python ≥3.8)
 __version__ = metadata.version(__package__ or __name__)
+
+from .core.stumpff import C, S
+from .api.propagator import UniversalPropagator
