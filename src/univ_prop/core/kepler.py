@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
-from Newton_Solve import Newton_Solver
+from _newton import Newton_Solver
 from stumpff import *
 
 def Chi_newton(mu, alpha, r0, vr, dt, tol=1e-8, max_iter=100, verbose=False):
