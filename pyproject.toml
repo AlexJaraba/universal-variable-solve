@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "univ_prop"
 version = "0.3.0"
@@ -5,8 +9,9 @@ description = "Universal-variable orbit propagator (Python + C++)"
 authors = [{ name = "Alex Jaraba", email = "amj634@nau.edu" }]
 readme = "README.md"
 requires-python = ">=3.9"
-where = ["."]
-include = ["api", "core", "util","examples","docs"]
 dependencies = [
     "numpy>=1.24",
 ]
+
+[tool.setuptools]
+packages = ["api", "core", "util"]
