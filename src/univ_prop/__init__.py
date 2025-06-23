@@ -15,4 +15,4 @@ __all__ = [
 __version__ = metadata.version(__package__ or __name__)
 
 from .core.stumpff import stumpff_C, stumpff_S
-from .api.propagator import UniversalPropagator
+from .api.propagator import propagate
