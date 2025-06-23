@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.linalg import norm
-from ..core import solve_chi, stumpff_C, stumpff_S, f, g, df, dg
+from ..core.kepler import solve_chi
+from ..core.coef import f, g, df, dg
+from ..core.stumpff import stumpff_C, stumpff_S
 
 def propagate(r0_vec, v0_vec, mu, dt, tol=1e-8):
     r0_vec = np.array(r0_vec)
