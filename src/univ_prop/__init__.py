@@ -8,7 +8,7 @@ from importlib import metadata
 
 __all__ = [
     "propagate",
-    "C", "S", "solve_chi"
+    "stumpff_C", "stumpff_S", "solve_chi"
 ]
 
 # version from pyproject.toml (requires Python ≥3.8)
