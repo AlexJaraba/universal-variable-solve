@@ -3,19 +3,41 @@ from numpy.linalg import norm
 from ..core.kepler import solve_chi
 from ..core.coef import f, g, df, dg
 from ..core.stumpff import stumpff_C, stumpff_S
+from typing import Tuple
 
 class UniversalPropagator:
-    def __init__(self,mu,name):
+    def __init__(self, mu: float, name: str):
         self.name = name
         self.mu = mu
         self.tol = 1e-8
     
-    def propagate(self,position_vector,velocity_vector,dt):
+    def propagate(
+        self,
+        Position: list[float] | np.ndarray,
+        Velocity: list[float] | np.ndarray,
+        dt: float
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Propagate the orbit forward by one time step using universal variable formulation.
+
+        :param Position: Initial position vector [x, y, z] in kilometers.
+        :type Position: list[float] or numpy.ndarray
+        :param Velocity: Initial velocity vector [vx, vy, vz] in km/s.
+        :type Velocity: list[float] or numpy.ndarray
+        :param dt: Time step duration in seconds.
+        :type dt: float
+
+        :return: A tuple containing:
+                 - r_vec (numpy.ndarray): Propagated position vector in km.
+                 - v_vec (numpy.ndarray): Propagated velocity vector in km/s.
+        :rtype: tuple[numpy.ndarray, numpy.ndarray]
+        """
+
         mu = self.mu
         tol = self.tol
 
-        r0_vec = np.array(position_vector)
-        v0_vec = np.array(velocity_vector)
+        r0_vec = np.array(Position)
+        v0_vec = np.array(Velocity)
         r0 = norm(r0_vec)
         v0 = norm(v0_vec)
         vr = np.dot(r0_vec, v0_vec) / r0

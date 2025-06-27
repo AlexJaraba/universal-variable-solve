@@ -13,6 +13,23 @@ from poliastro.plotting.static import StaticOrbitPlotter
 
 
 def find_mean_true(e_list,r_p,mu,dt,time):
+    """
+    Computes mean and true anomalies over time for elliptical, parabolic, or hyperbolic orbits.
+
+    :param e_list: List of eccentricities to analyze.
+    :type e_list: list[float]
+    :param r_p: Radius at periapsis [km].
+    :type r_p: float
+    :param mu: Gravitational parameter [km³/s²].
+    :type mu: float
+    :param dt: Time step [s].
+    :type dt: float
+    :param time: Total duration to propagate [s].
+    :type time: float
+
+    :return: Tuple of (mean_anomalies, true_anomalies), both in degrees.
+    :rtype: tuple[list[float], list[float]]
+    """
     for e0 in e_list:
         if e0 < 1: # Elliptical Orbit
             a = r_p / (1-e0)
@@ -127,6 +144,23 @@ def find_mean_true(e_list,r_p,mu,dt,time):
     return mean_anomalies, true_anomalies
 
 def find_orbit(r_p, e0, mu, total_time, dt):
+    """
+    Numerically propagate a 2-body orbit using a universal variable solver.
+
+    :param r_p: Radius at periapsis [km].
+    :type r_p: float
+    :param e0: Orbital eccentricity.
+    :type e0: float
+    :param mu: Gravitational parameter [km³/s²].
+    :type mu: float
+    :param total_time: Total time to propagate [s].
+    :type total_time: float
+    :param dt: Time step for integration [s].
+    :type dt: float
+
+    :return: Tuple of propagated position array, velocity array, and time array.
+    :rtype: tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]
+    """
     if np.isclose(e0, 1):  # Parabolic orbit
         v_p = np.sqrt(2 * mu/r_p)
     elif e0 > 1:
@@ -175,21 +209,27 @@ def main(
     eccentricity_list: list[float]
 ) -> None:
     """
-    Run orbital propagation visualizations and error analysis.
+    Run orbital propagation visualizations and error analysis using custom and Poliastro propagators.
 
-    Args:
-        Choice_of_test (Literal[1, 2, 3, 4]): 
-            The test to run:
-            1 - Plot custom propagator orbits
-            2 - Plot Poliastro orbits
-            3 - Compute final position error vs eccentricity and compare with Poliastro
-            4 - Compare true/mean anomaly errors over time with Poliastro
+    :param Choice_of_test: Test case selector:
+                           - 1: Plot orbits using the custom propagator
+                           - 2: Plot orbits using Poliastro
+                           - 3: Compare final position errors vs eccentricity
+                           - 4: Compare true and mean anomaly errors over time
+    :type Choice_of_test: Literal[1, 2, 3, 4]
+    :param dt: Propagation time step in seconds.
+    :type dt: float
+    :param radius_at_periapsis: Radius at periapsis in kilometers.
+    :type radius_at_periapsis: float
+    :param mu: Standard gravitational parameter in km³/s².
+    :type mu: float
+    :param total_time: Total duration of propagation in seconds.
+    :type total_time: float
+    :param eccentricity_list: List of eccentricities to simulate.
+    :type eccentricity_list: list[float]
 
-        dt (float): Time step for propagation in seconds.
-        radius_at_periapsis (float): Radius at periapsis in kilometers.
-        mu (float): Standard gravitational parameter in km^3/s^2.
-        total_time (float): Total propagation time in seconds.
-        eccentricity_list (list[float]): List of eccentricities to simulate.
+    :return: None
+    :rtype: None
     """
     start_time = time.time()
 
