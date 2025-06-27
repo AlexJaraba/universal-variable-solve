@@ -5,7 +5,8 @@ from ..core.coef import f, g, df, dg
 from ..core.stumpff import stumpff_C, stumpff_S
 
 class UniversalPropagator:
-    def __init__(self,mu):
+    def __init__(self,mu,name):
+        self.name = name
         self.mu = mu
         self.tol = 1e-8
     
