@@ -7,7 +7,7 @@ Universal-variable propagator.
 from importlib import metadata
 
 __all__ = [
-    "propagate",
+    "UniversalPropagator",
     "stumpff_C", "stumpff_S", "solve_chi"
 ]
 
@@ -15,4 +15,4 @@ __all__ = [
 __version__ = metadata.version(__package__ or __name__)
 
 from .core.stumpff import stumpff_C, stumpff_S
-from .api.propagator import propagate
+from .api.propagator import UniversalPropagator
