@@ -1,3 +1,3 @@
-from .propagator import propagate
+from .propagator import UniversalPropagator
 
 __all__ = ["propagate"]
