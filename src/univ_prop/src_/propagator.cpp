@@ -1,6 +1,7 @@
 #include "kepler.h"
 #include "stumpff.h"
 #include "coef.h"
+#include "propagator.h"
 
 #include <iostream>
 #include <vector>
@@ -9,8 +10,8 @@
 #include <string>
 #include <utility>
 
-
-class UniversalPropagator {
+namespace univ_prop {
+    class UniversalPropagator {
     public:
         std::string name;
         double mu;
@@ -64,4 +65,5 @@ class UniversalPropagator {
 
             return {r_vec, v_vec};
         }
-};
+    };
+}
