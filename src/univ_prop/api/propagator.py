@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.linalg import norm
-from ..core.kepler import solve_chi
-from ..core.coef import f, g, df, dg
-from ..core.stumpff import stumpff_C, stumpff_S
+from ..pyuniversal.kepler import solve_chi
+from ..pyuniversal.coef import f, g, df, dg
+from ..pyuniversal.stumpff import stumpff_C, stumpff_S
 from typing import Tuple
 
 class UniversalPropagator:

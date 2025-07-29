@@ -11,6 +11,7 @@ from poliastro.bodies import Earth
 from poliastro.twobody import Orbit
 from poliastro.plotting.static import StaticOrbitPlotter
 
+## Need to use specific enviroment to run this script
 
 def find_mean_true(e_list,r_p,mu,dt,time):
     """

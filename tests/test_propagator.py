@@ -2,6 +2,8 @@ import numpy as np
 import pytest
 from univ_prop.api.propagator import UniversalPropagator
 
+## Need to use specific environment to run this script
+
 @pytest.mark.parametrize(
     "mu, r0, v0, dt",
     [
